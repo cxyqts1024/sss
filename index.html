@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生成随机号码</title>
+  <style>
+		*{
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		.jackpot,.ol{
+			width: 700px;
+			overflow: hidden;
+			margin: auto;
+		}
+		.jackpot li{
+			width: 70px;
+			height: 70px;
+			float: left;
+			border: 2px solid red;
+			font-size: 28px;
+			text-align: center;
+			line-height: 70px;
+			color: red;
+			margin: 10px;
+			border-radius: 35px;
+		}
+		.jackpot .blue-orb{
+			color: dodgerblue;
+			border-color: dodgerblue;
+		}
+
+		#begin{
+			clear: both;
+			width: 100px;
+			height: 40px;
+			text-align: center;
+			line-height: 40px;
+			margin: auto;
+			background-color: blue;
+			color: white;
+			font-size: 18px;
+			cursor: pointer;
+			border-radius: 5px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+		}
+		#begin:hover{
+			background-color: mediumblue;
+			transition: all 0.8;
+		}
+	</style>
+</head>
+<body>
+   <ul class="jackpot">
+		<li class="red-orb">0</li>
+		<li class="red-orb">0</li>
+		<li class="red-orb">0</li>
+		<li class="red-orb">0</li>
+		<li class="red-orb">0</li>
+		<li class="red-orb">0</li>
+		<li class="blue-orb">0</li>
+	</ul>
+	<div id="begin">开始</div>
+	<ol class="ol">	</ol>
+  <script>
+    window.onload=function(){
+			var redOrb=document.getElementsByClassName("red-orb");
+			var begin=document.getElementById("begin");
+			var ol=document.querySelector(".ol");
+			var time=null;
+
+			for(var i=0; i<redOrb.length; i++){
+					redOrb[i].innerText=Math.floor(Math.random()*35+1);
+				}
+			document.querySelector(".blue-orb").innerText=Math.floor(Math.random()*15+1);
+			var bool=true;
+
+			begin.onclick=function(){
+
+			if(bool){
+				 bool=false;
+				time=setInterval(function(){//定义一个定时器，默认不停的跳转来改变里面的值
+				for(var i=0; i<redOrb.length; i++){
+					redOrb[i].innerText=Math.floor(Math.random()*35+1);
+				}
+				document.querySelector(".blue-orb").innerText=Math.floor(Math.random()*15+1);
+			},30);
+
+			var arr=[];//存储一个数组
+			while(arr.length<6){
+				var num=Math.floor(Math.random()*35+1);
+				var bol=true;
+				for(var j=0; j<arr.length; j++){//判断是否有重复的值
+					if(num==arr[j]){
+						bol=false;
+					}
+				};
+				if(bol){
+					arr.push(num);
+				}
+			}
+			setTimeout(function(){
+				clearInterval(time);//两秒钟以后把这个数组赋值进去
+				for(var i=0; i<redOrb.length; i++){
+					redOrb[i].innerText=arr[i]
+				}
+				bool=true;
+			},2000)
+			}else{
+				var li=document.createElement("li");
+					li.innerText="请隔两秒钟后在点击";
+					ol.appendChild(li);
+					li.style.cssText="color: #999; font-size: 12px;"
+					var iHeight=li.offsetHeight;
+					li.style.height=0+"px";
+					li.style.opacity=0;
+					startMove(li,{height:iHeight},function(){
+						startMove(li,{opacity:100})
+					})
+					setTimeout(function(){
+						startMove(li,{opacity:0},function(){
+							ol.removeChild(li)
+						})
+					},2000)
+			};
+			return false
+		}
+		}
+    function getStyle(obj, name) {
+      if(window.currentStyle){
+        return obj.currentStyle[name];
+      }
+      else
+      {
+        return getComputedStyle(obj, false)[name];
+      }
+    }
+
+    function startMove(obj, json, fnEnd){// js 动画方法
+      clearInterval(obj.timer);
+      obj.timer=setInterval(function (){
+        var bStop=true;		//假设：所有值都已经到了
+        for(var attr in json)
+        {
+          var cur=0;
+          if(attr=='opacity')
+          {
+            cur=Math.round(parseFloat(getStyle(obj, attr))*100);
+          }
+          else
+          {
+            cur=parseInt(getStyle(obj, attr));
+          }
+          var speed=(json[attr]-cur)/6;
+          speed=speed>0?Math.ceil(speed):Math.floor(speed);
+
+          if(cur!=json[attr])
+            bStop=false;
+          if(attr=='opacity')
+          {
+            obj.style.filter='alpha(opacity:'+(cur+speed)+')';
+            obj.style.opacity=(cur+speed)/100;
+          }
+          else
+          {
+            obj.style[attr]=cur+speed+'px';
+          }
+        }
+        if(bStop)
+        {
+          clearInterval(obj.timer);
+
+          if(fnEnd)fnEnd();
+        }
+      }, 30);
+    };
+  </script>
+
+</body>
+</html>
